@@ -1,36 +1,38 @@
-import express from 'express'
-import { config } from 'dotenv'
-import cookieParser from 'cookie-parser'
-import userRouter from './routes/user.routes.js'
-import taskRouter from './routes/task.routes.js'
-import { errorMiddleware } from './middlewares/error.middleware.js'
-import cors from 'cors'
+import express from "express";
+import userRouter from "./routes/user.js";
+import taskRouter from "./routes/task.js";
+import { config } from "dotenv";
+import cookieParser from "cookie-parser";
+import { errorMiddleware } from "./middlewares/error.js";
+import cors from "cors";
 
-
-export const app = express()
+export const app = express();
 
 config({
-    path: './config.env',
-})
+  path: "./data/config.env",
+});
 
-
-//middlewares
-app.use(cookieParser())
-app.use(express.urlencoded({extended:true}))
-app.use(express.json())
-app.use(cors({
+// Using Middlewares
+app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
     origin: [process.env.FRONTEND_URL],
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
-}))
+    credentials: true,
+  })
+);
 
-//routes
-app.use("/user",userRouter)
-app.use("/task", taskRouter)
+// Using routes
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/task", taskRouter);
 
-//error middleware
-app.use(errorMiddleware)
+app.get("/", (req, res) => {
+  res.send("Nice working");
+});
 
+// Using Error Middleware
+app.use(errorMiddleware);
 
 
 

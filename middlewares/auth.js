@@ -1,17 +1,17 @@
-import { User } from "../models/user.models.js"
+import { User } from "../models/user.js";
+import jwt from "jsonwebtoken";
 
-import jwt from 'jsonwebtoken'
-import ErrorHandler from "./error.middleware.js"
+export const isAuthenticated = async (req, res, next) => {
+  const { token } = req.cookies;
 
+  if (!token)
+    return res.status(404).json({
+      success: false,
+      message: "Login First",
+    });
 
-export const isAuthenticated = async(req, res, next)=>{
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const {token} = req.cookies
-    if(!token){
-        return next(new ErrorHandler("Log In First", 404))
-    }
-    const decoded = jwt.verify(token, process.env.SECRET_KEY)
-    req.user = await User.findById(decoded._id)
-    next()
-
-}
+  req.user = await User.findById(decoded._id);
+  next();
+};
